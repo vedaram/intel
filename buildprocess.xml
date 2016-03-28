@@ -1,0 +1,135 @@
+<project name="USTGLOBAL" basedir="." default="default">
+
+<property name="java_src" value="F:\antclass"/>
+<property name="java_dir" value="F:\PUMA\conf\java"/>
+<property name="bin_dir" value="F:\PUMA\bin"/>
+<property name="logs_dir" value="F:\PUMA\logs"/>
+<property name="data_dir" value="F:\PUMA\data"/>
+<property name="tmp_dir" value="F:\PUMA\tmp"/>
+<property name="lib_dir" value="F:\PUMA\lib"/>
+<property name="class_dir" value="F:\PUMA\conf\classes"/>
+<property name="del_dir" value="F:\REBOOK"/>
+
+<import file="F:\antclass\check.xml"/>
+
+ <typedef resource="net/sf/antcontrib/antcontrib.properties">
+  <classpath>
+    <pathelement location="F:\scm-softs\apache-ant-1.9.4-bin\apache-ant-1.9.4\lib\ant-contrib.jar"/>
+  </classpath>
+  </typedef>  
+  
+
+
+<patternset id="build_pattern">
+	<include name="**/*.java"/>
+	<exclude name="**/*STUB*"/>
+</patternset>
+
+
+<filelist id="list_files" dir="F:\antclass">
+<file name="build1.xml"/>
+<file name="build.xml"/>
+
+</filelist>
+
+
+
+<!-- cleaning the workspace -->
+<target name="clean" description="cleaning the workspace">
+<delete dir="${del_dir}"/>
+</target>
+
+<target name="create" depends="clean" description="creating the directory structure">
+<mkdir dir="${java_dir}"/>
+<mkdir dir="${bin_dir}"/>
+<mkdir dir="${logs_dir}"/>
+<mkdir dir="${data_dir}"/>
+<mkdir dir="${tmp_dir}"/>
+<mkdir dir="${lib_dir}"/>
+<mkdir dir="${class_dir}"/>
+</target>
+
+<target name="copy" depends="create" description="copying the files">
+<copy file="${java_src}\hi.java" tofile="${java_dir}\hi.java"/>
+ 
+<copy file="${java_src}\test.java" tofile="${java_dir}\test.java"/>
+
+<!-- example for datatypes pattern -->
+
+<copy todir="${java_dir}">
+	<fileset dir="${java_src}" casesensitive="yes">
+		<patternset refid="build_pattern"/>	
+	</fileset>
+</copy>
+
+
+<copy todir="${tmp_dir}">
+	<filelist refid="list_files"/>
+</copy>
+
+
+<copy todir="${data_dir}">
+<fileset dir="F:/" includes="*.properties"/>
+	<filterset>
+	<filter token="version" value="${ant.version}"/>
+	</filterset>
+</copy>
+</target>
+
+<target name="compile" depends="copy" description="compiling the code">
+<javac srcdir="${java_dir}" destdir="${class_dir}" includeantruntime="false"/>
+</target>
+
+<target name="package" depends="compile" description="packaging the code">
+<zip zipfile="${lib_dir}\output.zip" basedir="F:/namee1/classfile"/>
+<jar jarfile="${lib_dir}\output.jar" basedir="F:/namee1/classfile"/>
+<war file="${lib_dir}/output.war" basedir="e:/namee1/jen"/>
+
+<ear file="${lib_dir}/myapp.ear"
+appxml="F:/namee1/ear1/application.xml"
+basedir="F:/namee1/ear1"
+includes="*.jar,*.war"/>
+</target>
+
+
+
+<target name="ifalse" depends="package">
+
+<input
+    message="Please enter your name:"
+    addproperty="user_name"
+    defaultvalue="veda"
+/>
+
+<if>
+ <equals arg1="${user_name}" arg2="veda" />
+ <then>
+   <echo message="You have entered default name : veda" />
+ </then>
+ <else>
+   <echo message="Your name is : ${user_name}" />
+ </else>
+</if>
+
+</target>
+
+
+
+<target name="default" depends="ifalse">
+
+  <antcall target="test">
+    <param name="class_dir" value="XXXXXXXXXX"/>
+  </antcall>
+
+  <echo message=" your default property value is : ${class_dir}"/>
+  
+</target>
+
+<target name="test">
+  <echo message="your passed parameter is : ${class_dir}"/>
+  <antcall target="check1"/>
+  
+  
+</target>
+
+</project>
